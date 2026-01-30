@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fart IDE - Visual Programming Studio</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- LiteGraph.js -->
+    <link rel="stylesheet" href="lib/litegraph/litegraph.css">
+    <script src="lib/litegraph/litegraph.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Toolbar -->
+        <header id="toolbar">
+            <div class="toolbar-inner">
+                <div class="toolbar-left">
+                    <div class="logo">
+                        <div class="logo-emblem">💨</div>
+                        <div class="logo-text">
+                            <span class="logo-title">Fart IDE</span>
+                            <span class="logo-subtitle">Visual Programming</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="toolbar-center">
+                    <div class="button-group">
+                        <button id="btn-new" class="toolbar-btn" title="New Project">
+                            
+                            <span class="btn-label">New</span>
+                        </button>
+                        <button id="btn-open" class="toolbar-btn" title="Open Project">
+                            
+                            <span class="btn-label">Open</span>
+                        </button>
+                        <button id="btn-save" class="toolbar-btn" title="Save Project">
+                            
+                            <span class="btn-label">Save</span>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-divider"></div>
+                    
+                    <div class="button-group execution-controls">
+                        <button id="btn-run" class="toolbar-btn btn-run" title="Run Program (F5)">
+                            
+                            <span class="btn-label">Run</span>
+                        </button>
+                        <button id="btn-stop" class="toolbar-btn btn-stop" title="Stop Program" disabled>
+                            
+                            <span class="btn-label">Stop</span>
+                        </button>
+                        <button id="btn-step" class="toolbar-btn btn-step" title="Step Through">
+                            
+                            <span class="btn-label">Step</span>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-divider"></div>
+                    
+                    <button id="btn-clear-graph" class="toolbar-btn" title="Clear Canvas">
+                        
+                        <span class="btn-label">Clear</span>
+                    </button>
+                </div>
+                
+                <div class="toolbar-right">
+                    <button id="btn-settings" class="toolbar-btn icon-only" title="Settings">
+                        <span class="btn-icon">⚙</span>
+                    </button>
+                    <button id="btn-help" class="toolbar-btn icon-only" title="Help">
+                        <span class="btn-icon">?</span>
+                    </button>
+                </div>
+            </div>
+            <div class="toolbar-shadow"></div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div id="main-content">
+            <!-- Left: Stage Panel -->
+            <aside id="stage-panel">
+                <div class="panel-frame">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="panel-icon"></span>
+                            Stage Preview
+                        </div>
+                        <div class="panel-badge">640×360</div>
+                    </div>
+                    
+                    <div class="stage-wrapper">
+                        <div id="stage-container">
+                            <canvas id="stage-canvas" width="640" height="360"></canvas>
+                        </div>
+                        <div class="stage-bezel"></div>
+                    </div>
+                    
+                    <div class="stage-controls">
+                        <button id="btn-fullscreen-stage" class="stage-control-btn" title="Fullscreen">
+                            <span>⛶</span>
+                        </button>
+                        <button id="btn-reset-stage" class="stage-control-btn" title="Reset">
+                            <span>↺</span>
+                        </button>
+                        <div class="stage-coords-display">
+                            <span class="coord-label">x:</span>
+                            <span id="coord-x">0</span>
+                            <span class="coord-label">y:</span>
+                            <span id="coord-y">0</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: Node Canvas -->
+            <main id="canvas-area">
+                <div class="canvas-frame">
+                    <canvas id="fart-canvas"></canvas>
+                    
+                    <div id="canvas-watermark">
+                        Right-click to add nodes
+                    </div>
+                    
+                    <div id="zoom-controls">
+                        <button id="zoom-out" class="zoom-btn" title="Zoom Out">−</button>
+                        <div class="zoom-display">
+                            <span id="zoom-level">100</span>%
+                        </div>
+                        <button id="zoom-in" class="zoom-btn" title="Zoom In">+</button>
+                        <div class="zoom-divider"></div>
+                        <button id="zoom-fit" class="zoom-btn" title="Reset View">⌂</button>
+                    </div>
+                    
+                    <div id="execution-indicator" class="hidden">
+                        <div class="indicator-light"></div>
+                        <span class="indicator-text">Running</span>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right: Side Panel -->
+            <aside id="side-panel">
+                <div class="panel-frame">
+                    <!-- Tab Bar -->
+                    <div class="tab-bar">
+                        <button class="tab-btn active" data-tab="console">
+                            <span class="tab-icon"></span>
+                            <span class="tab-label">Console</span>
+                        </button>
+                        <button class="tab-btn" data-tab="sprites">
+                            <span class="tab-icon"></span>
+                            <span class="tab-label">Sprites</span>
+                        </button>
+                        <button class="tab-btn" data-tab="variables">
+                            <span class="tab-icon"></span>
+                            <span class="tab-label">Variables</span>
+                        </button>
+                        <button class="tab-btn" data-tab="properties">
+                            <span class="tab-icon"></span>
+                            <span class="tab-label">Properties</span>
+                        </button>
+                    </div>
+
+                    <!-- Console Tab -->
+                    <div class="tab-content active" id="console-tab">
+                        <div id="console-output">
+                            <div class="console-welcome">
+                                <div class="welcome-icon"></div>
+                                <div class="welcome-text">Fart IDE Console</div>
+                                <div class="welcome-hint">Type 'help' for commands</div>
+                            </div>
+                        </div>
+                        <div class="console-input-wrapper">
+                            <span class="console-prompt">›</span>
+                            <input type="text" id="console-input" placeholder="Enter command..." autocomplete="off" spellcheck="false">
+                            <button id="console-send" class="console-send-btn" title="Send">↵</button>
+                        </div>
+                        <div class="console-toolbar">
+                            <button id="console-clear" class="console-tool-btn">
+                                <span></span> Clear
+                            </button>
+                            <label class="console-checkbox">
+                                <input type="checkbox" id="console-autoscroll" checked>
+                                <span class="checkmark"></span>
+                                Auto-scroll
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sprites Tab -->
+                    <div class="tab-content" id="sprites-tab">
+                        <div class="tab-toolbar">
+                            <button id="add-sprite" class="primary-btn">
+                                <span class="btn-icon">+</span>
+                                Add Sprite
+                            </button>
+                        </div>
+                        <div id="sprites-list" class="scrollable-list">
+                            <div class="empty-state">
+                                <div class="empty-icon"></div>
+                                <div class="empty-text">No sprites yet</div>
+                                <div class="empty-hint">Click "Add Sprite" to create one</div>
+                            </div>
+                        </div>
+                        <div id="sprite-properties" class="properties-panel hidden"></div>
+                        <input type="file" id="sprite-file-input" accept="image/*" hidden>
+                    </div>
+
+                    <!-- Variables Tab -->
+                    <div class="tab-content" id="variables-tab">
+                        <div class="tab-toolbar">
+                            <button id="add-variable" class="primary-btn">
+                                <span class="btn-icon">+</span>
+                                Add Variable
+                            </button>
+                        </div>
+                        <div id="variables-list" class="scrollable-list">
+                            <div class="empty-state">
+                                <div class="empty-icon"></div>
+                                <div class="empty-text">No variables</div>
+                                <div class="empty-hint">Click "Add Variable" to create one</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Properties Tab -->
+                    <div class="tab-content" id="properties-tab">
+                        <div id="node-properties" class="scrollable-list">
+                            <div class="empty-state">
+                                <div class="empty-icon"></div>
+                                <div class="empty-text">No selection</div>
+                                <div class="empty-hint">Select a node to view properties</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Status Bar -->
+        <footer id="status-bar">
+            <div class="status-left">
+                <div class="status-indicator" id="connection-status">
+                    <span class="status-dot"></span>
+                </div>
+                <span id="status-message">Ready</span>
+            </div>
+            <div class="status-center">
+                <span id="execution-status" class="execution-badge stopped">
+                    <span class="badge-dot"></span>
+                    <span class="badge-text">Stopped</span>
+                </span>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="status-label">Sprites:</span>
+                    <span id="sprite-count" class="status-value">0</span>
+                </div>
+                <div class="status-divider"></div>
+                <div class="status-item">
+                    <span class="status-label">Nodes:</span>
+                    <span id="node-count" class="status-value">0</span>
+                </div>
+                <div class="status-divider"></div>
+                <div class="status-item">
+                    <span class="status-label">Links:</span>
+                    <span id="connection-count" class="status-value">0</span>
+                </div>
+                <div class="status-divider"></div>
+                <div class="status-item" id="execution-time-item">
+                    <span class="status-label">Time:</span>
+                    <span id="execution-time" class="status-value">0.0s</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-container"></div>
+    </div>
+
+    <!-- Hidden Inputs -->
+    <input type="file" id="file-input" accept=".fart,.json" hidden>
+
+    <!-- Scripts -->
+    <script src="js/fart-sprite.js"></script>
+    <script src="js/fart-core.js"></script>
+    <script src="js/fart-nodes.js"></script>
+    <script src="js/fart-executor.js"></script>
+    <script src="js/fart-extensions.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof LiteGraph === 'undefined') {
+                document.body.innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#2a2a3a;color:#ff6b6b;font-family:system-ui;text-align:center;padding:40px;">
+                        <div>
+                            <h1 style="font-size:2rem;margin-bottom:16px;">LiteGraph.js Not Found</h1>
+                            <p style="color:#aaa;">Please ensure <code>lib/litegraph/litegraph.js</code> exists.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            window.fartIDE = new FartIDE('fart-canvas');
+        });
+    </script>
+</body>
+</html>
